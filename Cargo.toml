@@ -1,5 +1,5 @@
 [package]
-name = "grrs"
+name = "findit"
 version = "0.1.0"
 authors = ["Thomas <tom.bauer95@gmail.com>"]
 edition = "2018"

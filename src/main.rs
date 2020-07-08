@@ -3,6 +3,7 @@ use std::collections::LinkedList;
 use std::fmt;
 use indicatif::ProgressBar;
 use std::fmt::{Formatter, Debug};
+use std::ops::Add;
 
 #[derive(StructOpt)]
 struct Cli {
@@ -31,31 +32,39 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 
     let mut result_set = ResultSet { result_matches: vec![] };
 
+    let mut line_count = 0;
+
     for line in _content.lines() {
         if line.contains(&args.pattern) {
+
+            line_count = line_count + 1;
 
             let mut new_vec = vec![];
 
             new_vec.push(line.parse().unwrap());
 
-            let line_number = _content.find(line.parse().unwrap()).unwrap() as u32;
-            new_vec.push(line_number.to_string());
-
+            new_vec.push(format!("{}", line_count));
 
             result_set.result_matches.push(new_vec);
 
             pb.inc(1);
+
+        }else {
+            line_count = line_count + 1;
+
+            pb.inc(1);
+
         }
-        pb.inc(1);
     }
 
     pb.finish();
 
-    println!("Found {} matching results", &result_set.result_matches.len());
+    println!("Found {} matching results in {} total lines...",
+             &result_set.result_matches.len(),
+             format!("{}", line_count));
     for result in &result_set.result_matches {
 
-            println!("{}, {}", result[0], result[1])
-
+            println!("{}: {}", result[1], result[0])
 
     }
 
