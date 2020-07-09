@@ -3,6 +3,13 @@ name = "findit"
 version = "0.1.0"
 authors = ["Thomas <tom.bauer95@gmail.com>"]
 edition = "2018"
+description = "A lightweight CLI for parsing files that can be read as text and finding phrases/patterns within and returning the line number it was found on and the rest of the line."
+readme = "README.md"
+homepage = "https://github.com/tbauer428/findit/"
+repository = "https://github.com/tbauer428/findit/"
+license = "MIT"
+categories = ["command-line-utilities"]
+keywords = ["search", "find", "file"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

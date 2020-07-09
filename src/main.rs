@@ -1,9 +1,5 @@
 use structopt::StructOpt;
-use std::collections::LinkedList;
-use std::fmt;
 use indicatif::ProgressBar;
-use std::fmt::{Formatter, Debug};
-use std::ops::Add;
 
 #[derive(StructOpt)]
 struct Cli {
