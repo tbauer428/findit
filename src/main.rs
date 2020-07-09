@@ -3,8 +3,9 @@ use indicatif::ProgressBar;
 
 #[derive(StructOpt)]
 struct Cli {
+    #[structopt(help = "You can pass in patterns as just a word, or use a phrase by surrounding your argument with single quotes 'like this'!")]
     pattern: String,
-    #[structopt(parse(from_os_str))]
+    #[structopt(parse(from_os_str), help = "Here you can pass the path to *almost* any file that's readable as text.")]
     path: std::path::PathBuf,
 }
 
