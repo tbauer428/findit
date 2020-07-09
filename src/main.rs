@@ -55,8 +55,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>>{
 
     pb.finish();
 
-    println!("Found {} matching results in {} total lines...",
+    let result_or_results = if *&result_set.result_matches.len() as u32 == 1 { "result" } else { "results" };
+
+    println!("Found {} matching {} in {} total lines...",
              &result_set.result_matches.len(),
+             result_or_results,
              format!("{}", line_count));
     for result in &result_set.result_matches {
 
