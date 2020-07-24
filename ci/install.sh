@@ -39,7 +39,7 @@ main() {
     curl -LSfs https://japaric.github.io/trust/install.sh | \
         sh -s -- \
            --force \
-           --git tbauer428/findit \
+           --git japaric/cross \
            --tag $tag \
            --target $target
 }
