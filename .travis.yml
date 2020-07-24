@@ -4,7 +4,6 @@
 dist: trusty
 language: rust
 services: docker
-sudo: required
 
 # TODO Rust builds on stable by default, this can be
 # overridden on a case by case basis down below.
@@ -113,7 +112,7 @@ deploy:
     condition: $TRAVIS_RUST_VERSION = stable
     tags: true
   provider: releases
-  skip_cleanup: true
+  cleanup: false
 
 cache: cargo
 before_cache:
