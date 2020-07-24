@@ -89,6 +89,9 @@ script:
 
 after_script: set +e
 
+before_deploy:
+  - sh ci/before_deploy.sh
+
 deploy:
   # - Create a `public_repo` GitHub token. Go to: https://github.com/settings/tokens/new
   # - Encrypt it: `travis encrypt 0123456789012345678901234567890123456789
