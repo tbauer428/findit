@@ -1,125 +1,33 @@
-# Based on the "trust" template v0.1.2
-# https://github.com/japaric/trust/tree/v0.1.2
-
-dist: trusty
 language: rust
-services: docker
-
-# Rust builds on stable by default, this can be
-# overridden on a case by case basis down below.
-
-env:
-  global:
-    - CRATE_NAME=findit
-
+rust:
+  - stable
+  - beta
+  - nightly
+script: cargo build --verbose --release; cargo test --verbose
 matrix:
-  # These are all the build jobs. Adjust as necessary. Comment out what you
-  # don't need
-  include:
-    # Android
-    # - env: TARGET=aarch64-linux-android DISABLE_TESTS=1
-    # - env: TARGET=arm-linux-androideabi DISABLE_TESTS=1
-    # - env: TARGET=armv7-linux-androideabi DISABLE_TESTS=1
-    # - env: TARGET=i686-linux-android DISABLE_TESTS=1
-    # - env: TARGET=x86_64-linux-android DISABLE_TESTS=1
-
-    # iOS
-    # - env: TARGET=aarch64-apple-ios DISABLE_TESTS=1
-    #   os: osx
-    # - env: TARGET=armv7-apple-ios DISABLE_TESTS=1
-    #   os: osx
-    # - env: TARGET=armv7s-apple-ios DISABLE_TESTS=1
-    #   os: osx
-    # - env: TARGET=i386-apple-ios DISABLE_TESTS=1
-    #   os: osx
-    # - env: TARGET=x86_64-apple-ios DISABLE_TESTS=1
-    #   os: osx
-
-    # Linux
-    - env: TARGET=aarch64-unknown-linux-gnu
-    - env: TARGET=arm-unknown-linux-gnueabi
-    - env: TARGET=armv7-unknown-linux-gnueabihf
-    - env: TARGET=i686-unknown-linux-gnu
-    - env: TARGET=i686-unknown-linux-musl
-    - env: TARGET=mips-unknown-linux-gnu
-    - env: TARGET=mips64-unknown-linux-gnuabi64
-    - env: TARGET=mips64el-unknown-linux-gnuabi64
-    - env: TARGET=mipsel-unknown-linux-gnu
-    - env: TARGET=powerpc-unknown-linux-gnu
-    - env: TARGET=powerpc64le-unknown-linux-gnu
-    - env: TARGET=s390x-unknown-linux-gnu DISABLE_TESTS=1
-    - env: TARGET=x86_64-unknown-linux-gnu
-    - env: TARGET=x86_64-unknown-linux-musl
-
-    # OSX
-    - env: TARGET=x86_64-apple-darwin
-      os: osx
-
-    # *BSD
-    - env: TARGET=x86_64-unknown-netbsd DISABLE_TESTS=1
-
-    # Windows
-    - env: TARGET=x86_64-pc-windows-gnu
-
-    # Bare metal
-    # These targets don't support std and as such are likely not suitable for
-    # most crates.
-    # - env: TARGET=thumbv6m-none-eabi
-    # - env: TARGET=thumbv7em-none-eabi
-    # - env: TARGET=thumbv7em-none-eabihf
-    # - env: TARGET=thumbv7m-none-eabi
-
-    # Testing other channels
-    - env: TARGET=x86_64-unknown-linux-gnu
-      rust: nightly
-    - env: TARGET=x86_64-apple-darwin
-      os: osx
-      rust: nightly
-
-before_install:
-  - set -e
-  - rustup self update
-
-install:
-  - sh ci/install.sh
-  - source ~/.cargo/env || true
-
-script:
-  - bash ci/script.sh
-
-after_script: set +e
-
+  allow_failures:
+    - rust: nightly
+  fast_finish: true
+os:
+  - linux
+  - osx
 before_deploy:
-  - sh ci/before_deploy.sh
-
+  - "if [[ -f target/release/findit ]]; then mv target/release/findit \"target/release/findit-$TRAVIS_TAG-$TRAVIS_OS_NAME\"; fi"
 deploy:
-  # - Create a `public_repo` GitHub token. Go to: https://github.com/settings/tokens/new
-  # - Encrypt it: `travis encrypt 0123456789012345678901234567890123456789
-  # - Paste the output down here
-  api_key:
-    secure: EYWlK1rNTJjrudrEp34MSuvntH3S8k7V38KW0g5YuRxMvG6ymKY6yMhLPIqafb460hdH4S8L3RxmGM0Nf26D2s+Z1mFGtkyRhcCI8IL3vg9/8PWU7uxTBFd1BJNZp2Hy5WwcWf+tuMVazQu0FQZzisQh+/71g9sihm4wZEMxIPf0pNLkMg5dSm8R85ra9iQs5kLMzpbeK48B3TC/GxYu77yassW2M7/Bfsje7tewGGy6SDGvZNBcajO1yxpEgxy05Jr6S6rxty1aFQyhvL7KamwitjOyR9McEyS//ShxbLDbkDdjH+QmpZ7u7vCEFBVrTYZKS+lWVfyfn2oFqZqrZP7eoU3Jt9KJtms3ysvVVG9DwJCflL9ZhpDpvoPWh1BNY1VghAzqsyOc+tUp59Z2Bpi7oksWuF6e/EDIq7SIk/wLxMpJMgUpKYYc3gQMlYr/Jq53l1e2O2/Wa+c6Ct01aoKgWwZNrT/odQC0AilL0SjJWJf5uswNyaLvjaHBlMBmyBZrrxcYsQhB09OXFx1Yq4pEkyPWyUNNE5hiOtspPTaouCJ83OET6W9695JW08iN4Wy450rpTGDf6jaYraxR5EJ85ONGoiVTjz8KUbX9mjg9asUwE2WzrMczzCAZfS6smGSO0yVqBud4YrsYceEf9hAEPfQtO4IBQXq6kEB4HV4=
-  file_glob: true
-  file: $CRATE_NAME-$TRAVIS_TAG-$TARGET.*
-  on:
-    # In this example, there are some targets that are tested using the stable
-    # and nightly channels. This condition makes sure there is only one release
-    # for such targets and that's generated using the stable channel
-    condition: $TRAVIS_RUST_VERSION = stable
-    tags: false
-  provider: releases
-  cleanup: false
-
-cache: cargo
-before_cache:
-  # Travis can't cache files that are not readable by "others"
-  - chmod -R a+r $HOME/.cargo
-
-branches:
-  only:
-    # release tags
-    - /^v\d+\.\d+\.\d+.*$/
-    - master
-
-notifications:
-  email:
-    on_success: never
+  - provider: cargo
+    skip_cleanup: true
+    on:
+      tags: true
+      condition: "$TRAVIS_RUST_VERSION = stable && $TRAVIS_OS_NAME = linux"
+      branch: master
+    token:
+      secure: EYWlK1rNTJjrudrEp34MSuvntH3S8k7V38KW0g5YuRxMvG6ymKY6yMhLPIqafb460hdH4S8L3RxmGM0Nf26D2s+Z1mFGtkyRhcCI8IL3vg9/8PWU7uxTBFd1BJNZp2Hy5WwcWf+tuMVazQu0FQZzisQh+/71g9sihm4wZEMxIPf0pNLkMg5dSm8R85ra9iQs5kLMzpbeK48B3TC/GxYu77yassW2M7/Bfsje7tewGGy6SDGvZNBcajO1yxpEgxy05Jr6S6rxty1aFQyhvL7KamwitjOyR9McEyS//ShxbLDbkDdjH+QmpZ7u7vCEFBVrTYZKS+lWVfyfn2oFqZqrZP7eoU3Jt9KJtms3ysvVVG9DwJCflL9ZhpDpvoPWh1BNY1VghAzqsyOc+tUp59Z2Bpi7oksWuF6e/EDIq7SIk/wLxMpJMgUpKYYc3gQMlYr/Jq53l1e2O2/Wa+c6Ct01aoKgWwZNrT/odQC0AilL0SjJWJf5uswNyaLvjaHBlMBmyBZrrxcYsQhB09OXFx1Yq4pEkyPWyUNNE5hiOtspPTaouCJ83OET6W9695JW08iN4Wy450rpTGDf6jaYraxR5EJ85ONGoiVTjz8KUbX9mjg9asUwE2WzrMczzCAZfS6smGSO0yVqBud4YrsYceEf9hAEPfQtO4IBQXq6kEB4HV4=
+  - provider: releases
+    skip_cleanup: true
+    on:
+      tags: true
+      condition: "$TRAVIS_RUST_VERSION = stable"
+      branch: master
+    file_glob: true
+    file:
+      - target/release/findit-*
