@@ -101,7 +101,7 @@ fn save(content: String) {
     let in_ms =
         since_the_epoch.as_secs() * 1000 + since_the_epoch.subsec_nanos() as u64 / 1_000_000;
 
-    println!("Saving results to {}.txt...", in_ms);
+    println!("\nSaving results to {}.txt...", in_ms);
     std::fs::write(format!("./saved/{:?}.txt", in_ms), content).unwrap()
 }
 
